@@ -1,6 +1,7 @@
 <?php
 /**
  * Plugin Name: Beaver Builder Custom Attributes
+ * Plugin URI: https://github.com/JasonTheAdams/BBCustomAttributes
  * Description: Adds the ability to set custom attributes for all modules
  * Version: 1.0.0
  * Author: Jason Adams
@@ -10,7 +11,7 @@
  * License URI: https://opensource.org/licenses/MIT
  */
 
-namespace JasonTheAdams;
+namespace JasonTheAdams\BBCustomAttributes;
 
 class BBCustomAttributes
 {
