@@ -35,34 +35,34 @@ class BBCustomAttributes
         }
 
         \FLBuilder::register_settings_form('custom_attributes', [
-            'title' => 'Custom Attributes',
+            'title' => __('Custom Attributes'),
             'tabs'  => [
                 'attributes' => [
-                    'title'    => 'Attributes',
+                    'title'    => __('Attributes'),
                     'sections' => [
                         'general' => [
                             'title'  => '',
                             'fields' => [
                                 'key'      => [
                                     'type'    => 'text',
-                                    'label'   => 'Key',
-                                    'help'    => 'Attribute key',
+                                    'label'   => __('Key'),
+                                    'help'    => __('Attribute key'),
                                     'preview' => ['type' => 'none']
                                 ],
                                 'value'    => [
                                     'type'    => 'text',
-                                    'label'   => 'Value',
-                                    'help'    => 'Attribute value',
+                                    'label'   => __('Value'),
+                                    'help'    => __('Attribute value'),
                                     'preview' => ['type' => 'none']
                                 ],
                                 'override' => [
                                     'type'    => 'select',
-                                    'label'   => 'Override Attribute',
-                                    'help'    => 'If the attribute already exists from another source, override or yield. Selecting no is safer and will avoid conflicts.',
+                                    'label'   => __('Override Attribute'),
+                                    'help'    => __('If the attribute already exists from another source, override or yield. Selecting no is safer and will avoid conflicts.'),
                                     'default' => 'no',
                                     'options' => [
-                                        'no'  => 'No',
-                                        'yes' => 'Yes'
+                                        'no'  => __('No'),
+                                        'yes' => __('Yes')
                                     ]
                                 ]
                             ]
@@ -87,8 +87,8 @@ class BBCustomAttributes
             $form['sections']['css_selectors']['fields']['custom_attributes'] = [
                 'type'         => 'form',
                 'form'         => 'custom_attributes',
-                'label'        => 'Attributes',
-                'help'         => 'Adds custom attributes to the module',
+                'label'        => __('Attributes'),
+                'help'         => __('Adds custom attributes to the module'),
                 'multiple'     => true,
                 'preview_text' => 'key'
             ];
