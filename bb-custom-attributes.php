@@ -111,7 +111,8 @@ class BBCustomAttributes
             foreach ($module->settings->custom_attributes as $attribute) {
                 $key = esc_attr($attribute->key);
                 if ('yes' === $attribute->override || ! isset($attributes[$key])) {
-                    $attributes[$key] = esc_attr($attribute->value);
+                    $value = do_shortcode(esc_attr($attribute->value));
+                    $attributes[$key] = $value;
                 }
             }
         }
