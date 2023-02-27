@@ -83,7 +83,7 @@ class BBCustomAttributes
      *
      * @return array
      */
-    public function filterAdvancedModule($form, $id)
+    public function filterAdvancedTabAttr($form, $id)
     {
         if ('module_advanced' === $id) {
             $form['sections']['css_selectors']['fields']['custom_attributes'] = [
