@@ -21,8 +21,10 @@ class BBCustomAttributes
     public function load()
     {
         add_action('plugins_loaded', [$this, 'registerForm']);
-        add_filter('fl_builder_register_settings_form', [$this, 'filterAdvancedModule'], 10, 2);
-        add_filter('fl_builder_module_attributes', [$this, 'filterAttributes'], 10, 2);
+        add_filter('fl_builder_register_settings_form', [$this, 'filterAdvancedTabAttr'], 10, 2);
+        add_filter('fl_builder_module_attributes', [$this, 'filterModuleAttributes'], 10, 2);
+        add_filter('fl_builder_column_attributes', [$this, 'filterColAttributes'], 10, 2);
+		add_filter('fl_builder_row_attributes', [$this, 'filterRowAttributes'], 10, 2);
     }
 
     /**
@@ -93,6 +95,28 @@ class BBCustomAttributes
                 'preview_text' => 'key'
             ];
         }
+        
+        if('col' === $id ) {
+            $form['tabs']['advanced']['sections']['css_selectors']['fields']['custom_attributes'] = [
+                'type'         => 'form',
+                'form'         => 'custom_attributes',
+                'label'        => __('Attributes'),
+                'help'         => __('Adds custom attributes to the column'),
+                'multiple'     => true,
+                'preview_text' => 'key'
+            ];
+        }
+		
+		if('row' === $id ) {
+            $form['tabs']['advanced']['sections']['css_selectors']['fields']['custom_attributes'] = [
+                'type'         => 'form',
+                'form'         => 'custom_attributes',
+                'label'        => __('Attributes'),
+                'help'         => __('Adds custom attributes to the row'),
+                'multiple'     => true,
+                'preview_text' => 'key'
+            ];
+        }
 
         return $form;
     }
@@ -105,10 +129,46 @@ class BBCustomAttributes
      *
      * @return array
      */
-    public function filterAttributes($attributes, $module)
+    public function filterModuleAttributes($attributes, $module)
     {
         if (isset($module->settings->custom_attributes)) {
             foreach ($module->settings->custom_attributes as $attribute) {
+                $key = esc_attr($attribute->key);
+                if ('yes' === $attribute->override || ! isset($attributes[$key])) {
+                    $value = do_shortcode(esc_attr($attribute->value));
+                    $attributes[$key] = $value;
+                }
+            }
+        }
+
+        return $attributes;
+    }
+    
+    /**
+	 * Adds the custom attributes to the column being rendered
+	 */
+    public function filterColAttributes($attributes, $col)
+    {
+        if (isset($col->settings->custom_attributes)) {
+            foreach ($col->settings->custom_attributes as $attribute) {
+                $key = esc_attr($attribute->key);
+                if ('yes' === $attribute->override || ! isset($attributes[$key])) {
+                    $value = do_shortcode(esc_attr($attribute->value));
+                    $attributes[$key] = $value;
+                }
+            }
+        }
+
+        return $attributes;
+    }
+	
+	/**
+	 * Adds the custom attributes to the row being rendered
+	 */
+    public function filterRowAttributes($attributes, $row)
+    {
+        if (isset($row->settings->custom_attributes)) {
+            foreach ($row->settings->custom_attributes as $attribute) {
                 $key = esc_attr($attribute->key);
                 if ('yes' === $attribute->override || ! isset($attributes[$key])) {
                     $value = do_shortcode(esc_attr($attribute->value));
