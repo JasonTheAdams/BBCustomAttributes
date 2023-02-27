@@ -53,7 +53,16 @@ class BBCustomAttributes
                                     'type'    => 'text',
                                     'label'   => __('Value'),
                                     'help'    => __('Attribute value'),
-                                    'preview' => ['type' => 'none']
+                                    'preview' => ['type' => 'none'],
+                                    'connections'   => ['string', 'html'],
+                                    'config'        => [
+                                        'post-type' => ['page', 'post']
+                                    ],
+                                    'third-party'   => [
+                                        'beaver-themer' => [
+                                            'field' => 'field'
+                                        ]
+                                    ]
                                 ],
                                 'override' => [
                                     'type'    => 'select',
