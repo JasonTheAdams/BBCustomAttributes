@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Beaver Builder Custom Attributes
  * Plugin URI: https://github.com/JasonTheAdams/BBCustomAttributes
- * Description: Adds the ability to set custom attributes for all modules, columns, and rows
- * Version: 1.0.0
+ * Description: Adds the ability to set custom attributes for modules, columns, and rows
+ * Version: 1.1.0
  * Author: Jason Adams
  * Author URI: https://github.com/jasontheadams
  * Requires PHP: 5.6
@@ -22,9 +22,9 @@ class BBCustomAttributes
     {
         add_action('plugins_loaded', [$this, 'registerForm']);
         add_filter('fl_builder_register_settings_form', [$this, 'filterAdvancedTabAttr'], 10, 2);
-        add_filter('fl_builder_module_attributes', [$this, 'filterModuleAttributes'], 10, 2);
-        add_filter('fl_builder_column_attributes', [$this, 'filterColAttributes'], 10, 2);
-		add_filter('fl_builder_row_attributes', [$this, 'filterRowAttributes'], 10, 2);
+        add_filter('fl_builder_module_attributes', [$this, 'filterElementAttributes'], 10, 2);
+        add_filter('fl_builder_column_attributes', [$this, 'filterElementAttributes'], 10, 2);
+        add_filter('fl_builder_row_attributes', [$this, 'filterElementAttributes'], 10, 2);
     }
 
     /**
@@ -107,7 +107,7 @@ class BBCustomAttributes
             ];
         }
 		
-		if('row' === $id ) {
+        if('row' === $id ) {
             $form['tabs']['advanced']['sections']['css_selectors']['fields']['custom_attributes'] = [
                 'type'         => 'form',
                 'form'         => 'custom_attributes',
@@ -122,55 +122,19 @@ class BBCustomAttributes
     }
 
     /**
-     * Adds the custom attributes to the module being rendered
+     * Adds the custom attributes to the element being rendered
      *
-     * @param array            $attributes
-     * @param \FLBuilderModule $module
+     * @param array    $attributes
+     * @param object   $element
      *
      * @return array
      */
-    public function filterModuleAttributes($attributes, $module)
+    public function filterElementAttributes($attributes, $element)
     {
-        if (isset($module->settings->custom_attributes)) {
-            foreach ($module->settings->custom_attributes as $attribute) {
-                $key = esc_attr($attribute->key);
-                if ('yes' === $attribute->override || ! isset($attributes[$key])) {
-                    $value = do_shortcode(esc_attr($attribute->value));
-                    $attributes[$key] = $value;
-                }
-            }
-        }
-
-        return $attributes;
-    }
-    
-    /**
-	 * Adds the custom attributes to the column being rendered
-	 */
-    public function filterColAttributes($attributes, $col)
-    {
-        if (isset($col->settings->custom_attributes)) {
-            foreach ($col->settings->custom_attributes as $attribute) {
-                $key = esc_attr($attribute->key);
-                if ('yes' === $attribute->override || ! isset($attributes[$key])) {
-                    $value = do_shortcode(esc_attr($attribute->value));
-                    $attributes[$key] = $value;
-                }
-            }
-        }
-
-        return $attributes;
-    }
-	
-	/**
-	 * Adds the custom attributes to the row being rendered
-	 */
-    public function filterRowAttributes($attributes, $row)
-    {
-        if (isset($row->settings->custom_attributes)) {
-            foreach ($row->settings->custom_attributes as $attribute) {
-                $key = esc_attr($attribute->key);
-                if ('yes' === $attribute->override || ! isset($attributes[$key])) {
+        if (isset($element->settings->custom_attributes)) {
+		    foreach ($element->settings->custom_attributes as $attribute) {
+		        $key = esc_attr($attribute->key);
+		        if ('yes' === $attribute->override || !isset($attributes[$key])) {
                     $value = do_shortcode(esc_attr($attribute->value));
                     $attributes[$key] = $value;
                 }
