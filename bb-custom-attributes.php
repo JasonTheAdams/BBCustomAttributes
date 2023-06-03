@@ -22,9 +22,9 @@ class BBCustomAttributes
     {
         add_action('plugins_loaded', [$this, 'registerForm']);
         add_filter('fl_builder_register_settings_form', [$this, 'filterAdvancedTabAttr'], 10, 2);
-        add_filter('fl_builder_module_attributes', [$this, 'filterElementAttributes'], 10, 2);
-        add_filter('fl_builder_column_attributes', [$this, 'filterElementAttributes'], 10, 2);
-        add_filter('fl_builder_row_attributes', [$this, 'filterElementAttributes'], 10, 2);
+        add_filter('fl_builder_module_attributes', [$this, 'filterAttributes'], 10, 2);
+        add_filter('fl_builder_column_attributes', [$this, 'filterAttributes'], 10, 2);
+        add_filter('fl_builder_row_attributes', [$this, 'filterAttributes'], 10, 2);
     }
 
     /**
@@ -40,7 +40,7 @@ class BBCustomAttributes
             'title' => __('Custom Attributes'),
             'tabs'  => [
                 'attributes' => [
-                    'title'    => __('Attributes'),
+                    'title'    => __('Attribute'),
                     'sections' => [
                         'general' => [
                             'title'  => '',
@@ -89,7 +89,7 @@ class BBCustomAttributes
             $form['sections']['css_selectors']['fields']['custom_attributes'] = [
                 'type'         => 'form',
                 'form'         => 'custom_attributes',
-                'label'        => __('Attributes'),
+                'label'        => __('Attribute'),
                 'help'         => __('Adds custom attributes to the module'),
                 'multiple'     => true,
                 'preview_text' => 'key'
@@ -100,7 +100,7 @@ class BBCustomAttributes
             $form['tabs']['advanced']['sections']['css_selectors']['fields']['custom_attributes'] = [
                 'type'         => 'form',
                 'form'         => 'custom_attributes',
-                'label'        => __('Attributes'),
+                'label'        => __('Attribute'),
                 'help'         => __('Adds custom attributes to the column'),
                 'multiple'     => true,
                 'preview_text' => 'key'
@@ -111,7 +111,7 @@ class BBCustomAttributes
             $form['tabs']['advanced']['sections']['css_selectors']['fields']['custom_attributes'] = [
                 'type'         => 'form',
                 'form'         => 'custom_attributes',
-                'label'        => __('Attributes'),
+                'label'        => __('Attribute'),
                 'help'         => __('Adds custom attributes to the row'),
                 'multiple'     => true,
                 'preview_text' => 'key'
@@ -122,14 +122,14 @@ class BBCustomAttributes
     }
 
     /**
-     * Adds the custom attributes to the element being rendered
+     * Adds the custom attributes to the row/column/module being rendered
      *
      * @param array    $attributes
      * @param object   $element
      *
      * @return array
      */
-    public function filterElementAttributes($attributes, $element)
+    public function filterAttributes($attributes, $element)
     {
         if (isset($element->settings->custom_attributes)) {
 		    foreach ($element->settings->custom_attributes as $attribute) {
