@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Beaver Builder Custom Attributes
  * Plugin URI: https://github.com/JasonTheAdams/BBCustomAttributes
- * Description: Adds the ability to set custom attributes for all modules
- * Version: 1.0.0
+ * Description: Adds the ability to set custom attributes for modules, columns, and rows
+ * Version: 1.1.0
  * Author: Jason Adams
  * Author URI: https://github.com/jasontheadams
  * Requires PHP: 5.6
@@ -21,8 +21,10 @@ class BBCustomAttributes
     public function load()
     {
         add_action('plugins_loaded', [$this, 'registerForm']);
-        add_filter('fl_builder_register_settings_form', [$this, 'filterAdvancedModule'], 10, 2);
+        add_filter('fl_builder_register_settings_form', [$this, 'filterAdvancedTabAttr'], 10, 2);
         add_filter('fl_builder_module_attributes', [$this, 'filterAttributes'], 10, 2);
+        add_filter('fl_builder_column_attributes', [$this, 'filterAttributes'], 10, 2);
+        add_filter('fl_builder_row_attributes', [$this, 'filterAttributes'], 10, 2);
     }
 
     /**
@@ -38,7 +40,7 @@ class BBCustomAttributes
             'title' => __('Custom Attributes'),
             'tabs'  => [
                 'attributes' => [
-                    'title'    => __('Attributes'),
+                    'title'    => __('Attribute'),
                     'sections' => [
                         'general' => [
                             'title'  => '',
@@ -81,14 +83,36 @@ class BBCustomAttributes
      *
      * @return array
      */
-    public function filterAdvancedModule($form, $id)
+    public function filterAdvancedTabAttr($form, $id)
     {
         if ('module_advanced' === $id) {
             $form['sections']['css_selectors']['fields']['custom_attributes'] = [
                 'type'         => 'form',
                 'form'         => 'custom_attributes',
-                'label'        => __('Attributes'),
+                'label'        => __('Attribute'),
                 'help'         => __('Adds custom attributes to the module'),
+                'multiple'     => true,
+                'preview_text' => 'key'
+            ];
+        }
+        
+        if('col' === $id ) {
+            $form['tabs']['advanced']['sections']['css_selectors']['fields']['custom_attributes'] = [
+                'type'         => 'form',
+                'form'         => 'custom_attributes',
+                'label'        => __('Attribute'),
+                'help'         => __('Adds custom attributes to the column'),
+                'multiple'     => true,
+                'preview_text' => 'key'
+            ];
+        }
+		
+        if('row' === $id ) {
+            $form['tabs']['advanced']['sections']['css_selectors']['fields']['custom_attributes'] = [
+                'type'         => 'form',
+                'form'         => 'custom_attributes',
+                'label'        => __('Attribute'),
+                'help'         => __('Adds custom attributes to the row'),
                 'multiple'     => true,
                 'preview_text' => 'key'
             ];
@@ -98,20 +122,21 @@ class BBCustomAttributes
     }
 
     /**
-     * Adds the custom attributes to the module being rendered
+     * Adds the custom attributes to the row/column/module being rendered
      *
-     * @param array            $attributes
-     * @param \FLBuilderModule $module
+     * @param array    $attributes
+     * @param object   $element
      *
      * @return array
      */
-    public function filterAttributes($attributes, $module)
+    public function filterAttributes($attributes, $element)
     {
-        if (isset($module->settings->custom_attributes)) {
-            foreach ($module->settings->custom_attributes as $attribute) {
+        if (isset($element->settings->custom_attributes)) {
+            foreach ($element->settings->custom_attributes as $attribute) {
                 $key = esc_attr($attribute->key);
-                if ('yes' === $attribute->override || ! isset($attributes[$key])) {
-                    $attributes[$key] = esc_attr($attribute->value);
+                if ('yes' === $attribute->override || !isset($attributes[$key])) {
+                    $value = do_shortcode(esc_attr($attribute->value));
+                    $attributes[$key] = $value;
                 }
             }
         }
