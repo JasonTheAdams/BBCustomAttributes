@@ -132,9 +132,9 @@ class BBCustomAttributes
     public function filterAttributes($attributes, $element)
     {
         if (isset($element->settings->custom_attributes)) {
-		    foreach ($element->settings->custom_attributes as $attribute) {
-		        $key = esc_attr($attribute->key);
-		        if ('yes' === $attribute->override || !isset($attributes[$key])) {
+            foreach ($element->settings->custom_attributes as $attribute) {
+                $key = esc_attr($attribute->key);
+                if ('yes' === $attribute->override || !isset($attributes[$key])) {
                     $value = do_shortcode(esc_attr($attribute->value));
                     $attributes[$key] = $value;
                 }
