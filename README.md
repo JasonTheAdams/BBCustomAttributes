@@ -1,8 +1,8 @@
 # Beaver Builder Custom Attributes
 
 ## What does this do?
-It adds the ability to add custom attributes to modules within Beaver Builder the same way you would add
-a class or ID. In fact, you'll find the new field in right below those fields in the Advanced tab.
+It adds the ability to add custom attributes to modules, columns, and rows within Beaver Builder the same way you would add
+a class or ID. In fact, you'll find the new field right below those fields in the Advanced tab.
 
 ## How do I install it?
 1. Download the zip file of this plugin
