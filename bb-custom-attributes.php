@@ -3,7 +3,7 @@
  * Plugin Name: Beaver Builder Custom Attributes
  * Plugin URI: https://github.com/JasonTheAdams/BBCustomAttributes
  * Description: Adds the ability to set custom attributes for modules, columns, and rows
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Jason Adams
  * Author URI: https://github.com/jasontheadams
  * Requires PHP: 5.6
@@ -22,6 +22,7 @@ class BBCustomAttributes
     {
         add_action('plugins_loaded', [$this, 'registerForm']);
         add_filter('fl_builder_register_settings_form', [$this, 'filterAdvancedTabAttr'], 10, 2);
+        add_action('wp_footer', [$this, 'enqueueCustomAttributesScript']);
         add_filter('fl_builder_module_attributes', [$this, 'filterAttributes'], 10, 2);
         add_filter('fl_builder_column_attributes', [$this, 'filterAttributes'], 10, 2);
         add_filter('fl_builder_row_attributes', [$this, 'filterAttributes'], 10, 2);
@@ -55,6 +56,12 @@ class BBCustomAttributes
                                     'type'    => 'text',
                                     'label'   => __('Value'),
                                     'help'    => __('Attribute value'),
+                                    'preview' => ['type' => 'none']
+                                ],
+                                'target'   => [
+                                    'type'    => 'text',
+                                    'label'   => __('Target Selector'),
+                                    'help'    => __('CSS selector of the inner element to apply the attribute to (leave blank to add to wrapper)'),
                                     'preview' => ['type' => 'none']
                                 ],
                                 'override' => [
@@ -123,6 +130,7 @@ class BBCustomAttributes
 
     /**
      * Adds the custom attributes to the row/column/module being rendered
+     * If there is a target value set, then add the attr to data-custom-attributes attr so js can add it to the inner element
      *
      * @param array    $attributes
      * @param object   $element
@@ -132,16 +140,72 @@ class BBCustomAttributes
     public function filterAttributes($attributes, $element)
     {
         if (isset($element->settings->custom_attributes)) {
+            $innerElementAttributes = [];
+            $wrapperAttributes = [];
+
             foreach ($element->settings->custom_attributes as $attribute) {
-                $key = esc_attr($attribute->key);
-                if ('yes' === $attribute->override || !isset($attributes[$key])) {
-                    $value = do_shortcode(esc_attr($attribute->value));
-                    $attributes[$key] = $value;
+                if (!empty($attribute->key) && !empty($attribute->value)) {
+                    $attr = [
+                        'key'      => esc_attr($attribute->key),
+                        'value'    => do_shortcode(esc_attr($attribute->value)),
+                        'override' => esc_attr($attribute->override)
+                    ];
+
+                    if (!empty($attribute->target)) {
+                        $attr['target'] = esc_attr($attribute->target);
+                        $innerElementAttributes[] = $attr;
+                    } else {
+                        $wrapperAttributes[$attr['key']] = $attr['value'];
+                    }
                 }
+            }
+
+            // Add direct attributes to the wrapper
+            foreach ($wrapperAttributes as $key => $value) {
+                if (isset($attributes[$key]) && $attr['override'] === 'no') {
+                    continue;
+                }
+                $attributes[$key] = $value;
+            }
+
+            // Add inner element custom attrs to data-custom-attributes attribute on the wrapper in prep for js processing
+            if (!empty($innerElementAttributes)) {
+                $attributes['data-custom-attributes'] = esc_attr(json_encode($innerElementAttributes));
             }
         }
 
         return $attributes;
+    }
+
+    /**
+     * Enqueues the JavaScript for processing custom attributes for inner elements
+     */
+    public function enqueueCustomAttributesScript()
+    {
+        ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const elsWithInnerCustomAttrs = document.querySelectorAll('[data-custom-attributes]');
+                
+                elsWithInnerCustomAttrs.forEach(function(element) {
+                    const customAttributes = JSON.parse(element.getAttribute('data-custom-attributes'));
+                    
+                    customAttributes.forEach(function(attribute) {
+                        const targetElements = element.querySelectorAll(attribute.target);
+                        
+                        targetElements.forEach(function(targetElement) {
+                            if (attribute.override === 'yes' || !targetElement.hasAttribute(attribute.key)) {
+                                targetElement.setAttribute(attribute.key, attribute.value);
+                            }
+                        });
+                    });
+                    
+                    // Remove the data-custom-attributes attribute after processing
+                    element.removeAttribute('data-custom-attributes');
+                });
+            });
+        </script>
+        <?php
     }
 }
 
