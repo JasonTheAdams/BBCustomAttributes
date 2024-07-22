@@ -3,7 +3,7 @@
  * Plugin Name: Beaver Builder Custom Attributes
  * Plugin URI: https://github.com/JasonTheAdams/BBCustomAttributes
  * Description: Adds the ability to set custom attributes for modules, columns, and rows
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Jason Adams
  * Author URI: https://github.com/jasontheadams
  * Requires PHP: 5.6
@@ -183,7 +183,7 @@ class BBCustomAttributes
     public function enqueueCustomAttributesScript()
     {
         ?>
-        <script>
+        <script id='bb-custom-attrs-script'>
             document.addEventListener('DOMContentLoaded', function() {
                 const elsWithInnerCustomAttrs = document.querySelectorAll('[data-custom-attributes]');
                 
@@ -203,6 +203,9 @@ class BBCustomAttributes
                     // Remove the data-custom-attributes attribute after processing
                     element.removeAttribute('data-custom-attributes');
                 });
+                // Dispatch a custom event and set a flag after processing custom attributes
+                document.dispatchEvent(new Event('customAttrsProcessed'));
+                window.customAttrsProcessingComplete = true;
             });
         </script>
         <?php
