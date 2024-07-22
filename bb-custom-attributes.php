@@ -183,7 +183,7 @@ class BBCustomAttributes
     public function enqueueCustomAttributesScript()
     {
         ?>
-        <script>
+        <script id='bb-custom-attrs-script'>
             document.addEventListener('DOMContentLoaded', function() {
                 const elsWithInnerCustomAttrs = document.querySelectorAll('[data-custom-attributes]');
                 
@@ -203,6 +203,9 @@ class BBCustomAttributes
                     // Remove the data-custom-attributes attribute after processing
                     element.removeAttribute('data-custom-attributes');
                 });
+                // Dispatch a custom event and set a flag after processing custom attributes
+                document.dispatchEvent(new Event('customAttrsProcessed'));
+                window.customAttrsProcessingComplete = true;
             });
         </script>
         <?php
