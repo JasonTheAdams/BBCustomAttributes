@@ -18,7 +18,7 @@ The Target Selector allows you to apply custom attributes to inner elements with
 - If your Target Selector matches more than one inner element, all matches will receive the attribute.
 - These inner attributes are added with JavaScript, so if you are trying to access this data with your own JavaScript, you will need to make sure it runs after this JavaScript runs.
 ### Ensuring custom JavaScript runs after attributes are applied
-To ensure your JavaScript runs after the custom attributes have been applied, you can listen for the `customAttrsProcessed` event. Additionally, you should check if the processing has already completed by checking the `window.customAttrsProcessingComplete flag`. Here is an example:
+To ensure your JavaScript runs after the custom attributes have been applied, you can listen for the `customAttrsProcessed` event. Additionally, you should check if the processing has already completed by checking the `window.customAttrsProcessingComplete` flag. Here is an example:
 ```
 function runCustomJs() {
     // Your custom JavaScript here
