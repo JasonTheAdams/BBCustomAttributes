@@ -8,7 +8,7 @@ a class or ID. In fact, you'll find the new field right below those fields in th
 After installing, to add an attribute to modules, columns, and rows, you navigate to the advanced tab. There will now be a field below the Label input where you can add your attributes.
 When you click into a custom attribute, you will have inputs for Key, Value, Target Selector, and Override Attribute.
 - The **Key** and **Value** inputs are your attribute name/value pairs like: `key="value"`
-- The **Target Selector** is a way to add your custom attribute to an inner element of the current element. By default, all attributes are added to the outer wrapper of a module/column/row. For example, you could add an attribute like `id`, `class`, `title` or an `aria-` attribute to an `<a>` inside a Button Module by typing in a Target Selector of `a` or `a.fl-button`. Two notes about using the Target Selector:
+- The **Target Selector** is a way to add your custom attribute to an inner element of the current element. By default, all attributes are added to the outer wrapper of a module/column/row. For example, you could add an attribute like `id`, `class`, `title` or an `aria-` attribute to an `<a>` inside a Button Module by typing in a Target Selector of `a` or `a.fl-button`. See below for more info about this feature.
 - The **Override Attribute** select input allows you to override the attribute if that attribute already exists from another source. Selecting 'No' is safer and will avoid conflicts.
 
 ![custom-attribute-form](https://github.com/user-attachments/assets/9f60dea4-c149-4533-8c52-10c1c6227fe5)
