@@ -10,7 +10,7 @@ class BBCustomAttributes
     {
         add_action('plugins_loaded', [$this, 'registerForm']);
         add_filter('fl_builder_register_settings_form', [$this, 'filterAdvancedTabAttr'], 10, 2);
-        add_action('wp_footer', [$this, 'enqueueCustomAttributesScript']);
+        add_action('wp_enqueue_scripts', [$this, 'enqueueCustomAttributesScript']);
         add_filter('fl_builder_module_attributes', [$this, 'filterAttributes'], 10, 2);
         add_filter('fl_builder_column_attributes', [$this, 'filterAttributes'], 10, 2);
         add_filter('fl_builder_row_attributes', [$this, 'filterAttributes'], 10, 2);
@@ -168,34 +168,14 @@ class BBCustomAttributes
     /**
      * Enqueues the JavaScript for processing custom attributes for inner elements
      */
-    public function enqueueCustomAttributesScript()
-    {
-        ?>
-        <script id='bb-custom-attrs-script'>
-            document.addEventListener('DOMContentLoaded', function() {
-                const elsWithInnerCustomAttrs = document.querySelectorAll('[data-custom-attributes]');
-                
-                elsWithInnerCustomAttrs.forEach(function(element) {
-                    const customAttributes = JSON.parse(element.getAttribute('data-custom-attributes'));
-                    
-                    customAttributes.forEach(function(attribute) {
-                        const targetElements = element.querySelectorAll(attribute.target);
-                        
-                        targetElements.forEach(function(targetElement) {
-                            if (attribute.override === 'yes' || !targetElement.hasAttribute(attribute.key)) {
-                                targetElement.setAttribute(attribute.key, attribute.value);
-                            }
-                        });
-                    });
-                    
-                    // Remove the data-custom-attributes attribute after processing
-                    element.removeAttribute('data-custom-attributes');
-                });
-                // Dispatch a custom event and set a flag after processing custom attributes
-                document.dispatchEvent(new Event('customAttrsProcessed'));
-                window.customAttrsProcessingComplete = true;
-            });
-        </script>
-        <?php
+    public function enqueueCustomAttributesScript() {
+        wp_enqueue_script(
+            'bb-custom-attributes-script',
+            plugin_dir_url( __FILE__ ) . 'assets/js/bb-custom-attributes.js',
+            array(),
+            BBCUSTOMATTRIBUTES_VERSION,
+            true
+        );
     }
+    
 }
