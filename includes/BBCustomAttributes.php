@@ -171,7 +171,7 @@ class BBCustomAttributes
     public function enqueueCustomAttributesScript() {
         wp_enqueue_script(
             'bb-custom-attributes-script',
-            plugin_dir_url( __FILE__ ) . 'assets/js/bb-custom-attributes.js',
+            plugin_dir_url( dirname( __FILE__ ) ) . 'assets/js/bb-custom-attributes.js',
             array(),
             BBCUSTOMATTRIBUTES_VERSION,
             true
