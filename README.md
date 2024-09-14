@@ -33,10 +33,16 @@ if (window.customAttrsProcessingComplete) {
 }
 ```
 
-## How do I install it?
+## How do I install it? What about updates?
 1. Download the zip file of this plugin
 2. Upload it to your WordPress install
 3. Activate the plugin.
+
+### How Updates Work
+
+Even though the plugin is not listed in the WordPress repository, you’ll still receive updates through the WordPress dashboard like any other plugin. The GitHub updater built into the plugin ensures that whenever there’s a new version available on GitHub, it will appear in your WordPress updates section.
+
+This means you don’t have to manually check GitHub for updates—the plugin will notify you of new releases and allow you to update in one click, just like with plugins from the WordPress plugin repository.
 
 ## Is this supported?
 This is intended to be a very simple and light-weight plugin. Ideally it shouldn't really require much support.
