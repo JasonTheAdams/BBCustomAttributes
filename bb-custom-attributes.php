@@ -3,7 +3,7 @@
  * Plugin Name: Beaver Builder Custom Attributes
  * Plugin URI: https://github.com/JasonTheAdams/BBCustomAttributes
  * Description: Adds the ability to set custom attributes for modules, columns, and rows
- * Version: 1.3
+ * Version: 1.3.1
  * Author: Jason Adams
  * Author URI: https://github.com/jasontheadams
  * Requires PHP: 5.6
@@ -14,7 +14,7 @@
 namespace JasonTheAdams\BBCustomAttributes;
 
 // Define plugin version
-define( 'BBCUSTOMATTRIBUTES_VERSION', '1.3' );
+define( 'BBCUSTOMATTRIBUTES_VERSION', '1.3.1' );
 
 // Include core plugin functionality
 include_once plugin_dir_path( __FILE__ ) . 'includes/BBCustomAttributes.php';
