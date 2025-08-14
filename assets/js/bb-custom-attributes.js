@@ -17,4 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Remove the data-custom-attributes attribute after processing
         element.removeAttribute('data-custom-attributes');
     });
+    
+    // Set the global flag to indicate processing is complete
+    window.customAttrsProcessingComplete = true;
+    
+    // Dispatch the custom event to notify other scripts
+    const event = new CustomEvent('customAttrsProcessed');
+    document.dispatchEvent(event);
 });
