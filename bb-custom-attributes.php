@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/JasonTheAdams/BBCustomAttributes
  * Description: Adds the ability to set custom attributes for modules, columns, and rows
  * Version: 1.3.1
- * Author: Jason Adams
+ * Author: Jason Adams & PYLE/DIGITAL
  * Author URI: https://github.com/jasontheadams
  * Requires PHP: 5.6
  * License: MIT
