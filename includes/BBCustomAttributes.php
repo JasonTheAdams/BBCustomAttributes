@@ -11,6 +11,8 @@ class BBCustomAttributes
         add_action('plugins_loaded', [$this, 'registerForm']);
         add_filter('fl_builder_register_settings_form', [$this, 'filterAdvancedTabAttr'], 10, 2);
         add_action('wp_enqueue_scripts', [$this, 'enqueueCustomAttributesScript']);
+        add_filter('fl_builder_node_attributes', [$this, 'disableNativeCustomAttributes'], 10, 2);
+        add_filter('fl_builder_node_content_attributes', [$this, 'disableNativeContentCustomAttributes'], 10, 2);
         add_filter('fl_builder_module_attributes', [$this, 'filterAttributes'], 10, 2);
         add_filter('fl_builder_column_attributes', [$this, 'filterAttributes'], 10, 2);
         add_filter('fl_builder_row_attributes', [$this, 'filterAttributes'], 10, 2);
@@ -25,7 +27,12 @@ class BBCustomAttributes
             return;
         }
 
-        \FLBuilder::register_settings_form('custom_attributes', [
+        \FLBuilder::register_settings_form('custom_attributes', $this->getCustomAttributesForm());
+    }
+
+    private function getCustomAttributesForm()
+    {
+        return [
             'title' => __('Custom Attributes'),
             'tabs'  => [
                 'attributes' => [
@@ -67,7 +74,7 @@ class BBCustomAttributes
                     ]
                 ]
             ]
-        ]);
+        ];
     }
 
     /**
@@ -80,7 +87,15 @@ class BBCustomAttributes
      */
     public function filterAdvancedTabAttr($form, $id)
     {
+        if ('custom_attributes' === $id) {
+            return $this->getCustomAttributesForm();
+        }
+
         if ('module_advanced' === $id) {
+            if (isset($form['sections']['custom_attributes'])) {
+                unset($form['sections']['custom_attributes']);
+            }
+
             $form['sections']['css_selectors']['fields']['custom_attributes'] = [
                 'type'         => 'form',
                 'form'         => 'custom_attributes',
@@ -92,6 +107,10 @@ class BBCustomAttributes
         }
         
         if('col' === $id ) {
+            if (isset($form['tabs']['advanced']['sections']['custom_attributes'])) {
+                unset($form['tabs']['advanced']['sections']['custom_attributes']);
+            }
+
             $form['tabs']['advanced']['sections']['css_selectors']['fields']['custom_attributes'] = [
                 'type'         => 'form',
                 'form'         => 'custom_attributes',
@@ -103,6 +122,10 @@ class BBCustomAttributes
         }
 		
         if('row' === $id ) {
+            if (isset($form['tabs']['advanced']['sections']['custom_attributes'])) {
+                unset($form['tabs']['advanced']['sections']['custom_attributes']);
+            }
+
             $form['tabs']['advanced']['sections']['css_selectors']['fields']['custom_attributes'] = [
                 'type'         => 'form',
                 'form'         => 'custom_attributes',
@@ -116,6 +139,25 @@ class BBCustomAttributes
         return $form;
     }
 
+    public function disableNativeCustomAttributes($attributes, $element)
+    {
+        if (class_exists('\FLBuilderCustomAttributes') && isset($element->settings->custom_attributes)) {
+            $element->settings->_bb_custom_attributes_custom_attributes = $element->settings->custom_attributes;
+            $element->settings->custom_attributes = [];
+        }
+
+        return $attributes;
+    }
+
+    public function disableNativeContentCustomAttributes($attributes, $element)
+    {
+        if (isset($element->settings->_bb_custom_attributes_custom_attributes)) {
+            return [];
+        }
+
+        return $attributes;
+    }
+
     /**
      * Adds the custom attributes to the row/column/module being rendered
      * If there is a target value set, then add the attr to data-custom-attributes attr so js can add it to the inner element
@@ -127,11 +169,14 @@ class BBCustomAttributes
      */
     public function filterAttributes($attributes, $element)
     {
-        if (isset($element->settings->custom_attributes)) {
+        if (isset($element->settings->_bb_custom_attributes_custom_attributes) || isset($element->settings->custom_attributes)) {
+            $customAttributes = isset($element->settings->_bb_custom_attributes_custom_attributes) ? $element->settings->_bb_custom_attributes_custom_attributes : $element->settings->custom_attributes;
+            $element->settings->custom_attributes = $customAttributes;
+
             $innerElementAttributes = [];
             $wrapperAttributes = [];
 
-            foreach ($element->settings->custom_attributes as $attribute) {
+            foreach ($customAttributes as $attribute) {
                 if (!empty($attribute->key) && !empty($attribute->value)) {
                     $attr = [
                         'key'      => esc_attr($attribute->key),

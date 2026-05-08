@@ -13,6 +13,15 @@ When you click into a custom attribute, you will have inputs for Key, Value, Tar
 
 ![custom-attribute-form](https://github.com/user-attachments/assets/9f60dea4-c149-4533-8c52-10c1c6227fe5)
 
+## Beaver Builder native custom attributes compatibility
+Beaver Builder 2.11 added native custom attributes using the same setting name this plugin has used for years. To avoid conflicts and preserve existing sites, this plugin disables Beaver Builder's native custom attributes handling when both are active.
+
+The main compatibility difference is this plugin's Target Selector feature. If you are using Target Selector to apply attributes to inner elements, keep using this plugin. Those attributes will continue to be rendered by this plugin.
+
+If you are not using Target Selector, you can deactivate this plugin and use Beaver Builder's native custom attributes instead.
+
+For new sites running Beaver Builder 2.11 or newer, use Beaver Builder's native custom attributes instead of installing this plugin.
+
 ## Advanced use of the Target Selector
 The Target Selector allows you to apply custom attributes to inner elements within the current element. Here are some advanced usage tips:
 - If your Target Selector matches more than one inner element, all matches will receive the attribute.
