@@ -94,46 +94,88 @@ class GithubUpdater {
 
 	/**
 	 * [get_repository_info description]
-	 * @return [type] [description]
+	 * @return array Repository information or empty array on failure
 	 */
 	private function get_repository_info() {
+		// Do we have a response already cached?
+		if ( is_null( $this->github_response ) ) {
+			// Build URI
+			$request_uri = sprintf( 'https://api.github.com/repos/%s/%s/releases', $this->username, $this->repository );
 
-		// Do we have a response?
-	    if ( is_null( $this->github_response ) ) {
-	    	// Build URI
-	        $request_uri = sprintf( 'https://api.github.com/repos/%s/%s/releases', $this->username, $this->repository );
+			// Is there an access token?
+			if( $this->authorize_token ) {
+				// Append it
+				$request_uri = add_query_arg( 'access_token', $this->authorize_token, $request_uri );
+			}
 
-	        // Is there an access token?
-	        if( $this->authorize_token ) {
-	        	// Append it
-	            $request_uri = add_query_arg( 'access_token', $this->authorize_token, $request_uri );
-	        }
+			// Make the request to GitHub API
+			$request = wp_remote_get( $request_uri );
 
-	        // Get JSON and parse it
-	        $response = json_decode( wp_remote_retrieve_body( wp_remote_get( $request_uri ) ), true );
+			// Check if request was successful
+			if ( is_wp_error( $request ) ) {
+				// Handle error case
+				$this->github_response = array();
+				return $this->github_response;
+			}
 
-	        // If it is an array
-	        if( is_array( $response ) ) {
-	        	// Get the first item
-	            $response = current( $response );
-	        }
-	        // Is there an access token?
-	        if( $this->authorize_token ) {
-	        	// Update our zip url with token
-	            $response['zipball_url'] = add_query_arg( 'access_token', $this->authorize_token, $response['zipball_url'] );
-	        }
+			// Get response code
+			$response_code = wp_remote_retrieve_response_code( $request );
+			if ( $response_code !== 200 ) {
+				// API returned an error status code
+				$this->github_response = array();
+				return $this->github_response;
+			}
 
-			// try to get metadata from the release body
-			$metadata = $this->get_tmpfile_data( $response['body']);
+			// Get JSON and parse it
+			$response = json_decode( wp_remote_retrieve_body( $request ), true );
 
-			// merge the data with the response
-			$response = array_merge( $response, $metadata);
+			// Validate response is an array
+			if ( !is_array( $response ) || empty( $response ) ) {
+				$this->github_response = array();
+				return $this->github_response;
+			}
 
-	        // Set it to our property
-	        $this->github_response = $response;
-	        return $response;
-	    }
+			// Get the first item
+			$response = current( $response );
 
+			// Verify we have a proper release structure
+			if ( !is_array( $response ) ) {
+				$this->github_response = array();
+				return $this->github_response;
+			}
+
+			// Is there an access token and zipball URL?
+			if ( $this->authorize_token && isset( $response['zipball_url'] ) ) {
+				// Update our zip url with token
+				$response['zipball_url'] = add_query_arg( 'access_token', $this->authorize_token, $response['zipball_url'] );
+			}
+
+			// Check if body exists before trying to get metadata
+			if ( isset( $response['body'] ) && is_string( $response['body'] ) ) {
+				// Try to get metadata from the release body
+				$metadata = $this->get_tmpfile_data( $response['body'] );
+				
+				// Ensure metadata is an array
+				if ( is_array( $metadata ) ) {
+					// Merge the data with the response
+					$response = array_merge( $response, $metadata );
+				}
+			} else {
+				// If body doesn't exist, set empty defaults
+				$response['tested'] = '';
+				$response['requires_php'] = '';
+				$response['icons'] = array();
+				$response['banners'] = array();
+				$response['updates'] = '';
+			}
+
+			// Set it to our property
+			$this->github_response = $response;
+			return $response;
+		}
+
+		// Return cached response
+		return $this->github_response;
 	}
 
 	/**
